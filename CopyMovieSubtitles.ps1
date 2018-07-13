@@ -1,3 +1,4 @@
+# Find the subtitles
 $filelist = Get-ChildItem "M:\TV & Movies\Movies" -include *.sub,*.srt -recurse
  
 $num = $filelist | measure
@@ -9,12 +10,14 @@ ForEach ($file in $filelist)
     $i++;
     $oldfile = $file.DirectoryName + "\" + $file.BaseName + $file.Extension;
 	$newdirectory = "X:\TV & Movies\Movies\" + (get-item $file.DirectoryName).parent + "\" + (get-item $oldfile).Directory.Name +  "\"
-	$oldfile.replace(".en","")
+	# Strip subtitles of current quality and erroneous text
+    $oldfile.replace(".en","")
 	$oldfile.replace(" - 1080p","")
 	$oldfile.replace("- 1080p","")
 	$oldfile.replace("-1080p","")
 	$oldfile.replace("-DVD-Rip","")
 	$oldfile.replace("-BR-Rip","")
+    # Make the new subtitle names match the converted video
     $newfile =  $file.BaseName + " - 720p.en" + $file.Extension;
 	$newcomplete = $newdirectory + $newfile
 			If (-not(Test-Path $newdirectory)){
@@ -22,7 +25,7 @@ ForEach ($file in $filelist)
 			If (-not(Test-Path $newcomplete)){
     $progress = ($i / $filecount) * 100
     $progress = [Math]::Round($progress,2)
- 
+    # Pretty printing
     Clear-Host
     Write-Host -------------------------------------------------------------------------------
 	Write-Host "New File: $newfile"
@@ -35,6 +38,7 @@ $host.ui.RawUI.WindowTitle = "$i of $filecount - $progress%"
 	
     Copy-Item $oldfile $newcomplete
 }}
+# Don't write it if it exists
 Else{
 	Write-Host "Exists"
 	}
